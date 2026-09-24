@@ -26,13 +26,33 @@ import {
   ChevronLeft,
   X,
   LogOut,
-  Sparkles,
+  ReceiptText,
+  Undo2,
+  CreditCard,
+  ClipboardList,
+  Warehouse,
+  SlidersHorizontal,
+  TriangleAlert,
+  BookOpen,
+  BookText,
+  Receipt,
+  ChartNoAxesCombined,
+  Scale,
+  PackageSearch,
+  FileText,
+  TrendingUp,
+  User,
+  Building2,
+  ShieldCheck,
+  LockKeyhole,
+  Plug,
 } from 'lucide-react';
 
 export interface NavSubItem {
   id: string;
   label: string;
   href: string;
+  icon: any;
 }
 
 export interface NavItem {
@@ -73,10 +93,10 @@ const NAV_STRUCTURE: NavSection[] = [
         label: 'Sales',
         icon: ShoppingCart,
         subItems: [
-          { id: 'invoices', label: 'Invoices', href: '/admin/sales/invoices' },
-          { id: 'orders', label: 'Orders', href: '/admin/sales/orders' },
-          { id: 'returns', label: 'Returns', href: '/admin/sales/returns' },
-          { id: 'payments', label: 'Payments', href: '/admin/payments' },
+          { id: 'invoices', label: 'Invoices', href: '/admin/sales/invoices', icon: ReceiptText },
+          { id: 'orders', label: 'Orders', href: '/admin/sales/orders', icon: ShoppingCart },
+          { id: 'returns', label: 'Returns', href: '/admin/sales/returns', icon: Undo2 },
+          { id: 'payments', label: 'Payments', href: '/admin/payments', icon: CreditCard },
         ],
       },
     ],
@@ -89,9 +109,9 @@ const NAV_STRUCTURE: NavSection[] = [
         label: 'Purchases',
         icon: ShoppingBag,
         subItems: [
-          { id: 'purchase-orders', label: 'Purchase Orders', href: '/admin/purchases/orders' },
-          { id: 'purchase-returns', label: 'Purchase Returns', href: '/admin/purchases/returns' },
-          { id: 'purchase-suppliers', label: 'Suppliers', href: '/admin/suppliers' },
+          { id: 'purchase-orders', label: 'Purchase Orders', href: '/admin/purchases/orders', icon: ClipboardList },
+          { id: 'purchase-returns', label: 'Purchase Returns', href: '/admin/purchases/returns', icon: Undo2 },
+          { id: 'purchase-suppliers', label: 'Suppliers', href: '/admin/suppliers', icon: Truck },
         ],
       },
     ],
@@ -104,10 +124,10 @@ const NAV_STRUCTURE: NavSection[] = [
         label: 'Inventory',
         icon: Boxes,
         subItems: [
-          { id: 'inventory-stock', label: 'Stock', href: '/admin/inventory/stock' },
-          { id: 'inventory-warehouses', label: 'Warehouses', href: '/admin/inventory/warehouses' },
-          { id: 'inventory-adjustments', label: 'Stock Adjustments', href: '/admin/inventory/adjustments' },
-          { id: 'inventory-low-stock', label: 'Low Stock', href: '/admin/inventory/low-stock' },
+          { id: 'inventory-stock', label: 'Stock', href: '/admin/inventory/stock', icon: Boxes },
+          { id: 'inventory-warehouses', label: 'Warehouses', href: '/admin/inventory/warehouses', icon: Warehouse },
+          { id: 'inventory-adjustments', label: 'Stock Adjustments', href: '/admin/inventory/adjustments', icon: SlidersHorizontal },
+          { id: 'inventory-low-stock', label: 'Low Stock', href: '/admin/inventory/low-stock', icon: TriangleAlert },
         ],
       },
     ],
@@ -120,11 +140,11 @@ const NAV_STRUCTURE: NavSection[] = [
         label: 'Accounting',
         icon: Calculator,
         subItems: [
-          { id: 'acc-ledger', label: 'Ledger', href: '/admin/accounting/ledger' },
-          { id: 'acc-journal', label: 'Journal', href: '/admin/accounting/journal' },
-          { id: 'acc-expenses', label: 'Expenses', href: '/admin/expenses' },
-          { id: 'acc-pl', label: 'Profit & Loss', href: '/admin/reports/profit-loss' },
-          { id: 'acc-bs', label: 'Balance Sheet', href: '/admin/reports/balance-sheet' },
+          { id: 'acc-ledger', label: 'Ledger', href: '/admin/accounting/ledger', icon: BookOpen },
+          { id: 'acc-journal', label: 'Journal', href: '/admin/accounting/journal', icon: BookText },
+          { id: 'acc-expenses', label: 'Expenses', href: '/admin/expenses', icon: Receipt },
+          { id: 'acc-pl', label: 'Profit & Loss', href: '/admin/reports/profit-loss', icon: ChartNoAxesCombined },
+          { id: 'acc-bs', label: 'Balance Sheet', href: '/admin/reports/balance-sheet', icon: Scale },
         ],
       },
     ],
@@ -137,13 +157,13 @@ const NAV_STRUCTURE: NavSection[] = [
         label: 'Reports',
         icon: BarChart3,
         subItems: [
-          { id: 'rep-sales', label: 'Sales Report', href: '/admin/reports/sales' },
-          { id: 'rep-purchase', label: 'Purchase Report', href: '/admin/reports/purchase' },
-          { id: 'rep-inventory', label: 'Inventory Report', href: '/admin/reports/inventory' },
-          { id: 'rep-customer', label: 'Customer Report', href: '/admin/reports/customer' },
-          { id: 'rep-gst', label: 'GST Report', href: '/admin/reports/gst' },
-          { id: 'rep-pl', label: 'Profit & Loss', href: '/admin/reports/profit-loss' },
-          { id: 'rep-analytics', label: 'Business Analytics', href: '/admin/reports/analytics' },
+          { id: 'rep-sales', label: 'Sales Report', href: '/admin/reports/sales', icon: BarChart3 },
+          { id: 'rep-purchase', label: 'Purchase Report', href: '/admin/reports/purchase', icon: ShoppingBag },
+          { id: 'rep-inventory', label: 'Inventory Report', href: '/admin/reports/inventory', icon: PackageSearch },
+          { id: 'rep-customer', label: 'Customer Report', href: '/admin/reports/customer', icon: Users },
+          { id: 'rep-gst', label: 'GST Report', href: '/admin/reports/gst', icon: FileText },
+          { id: 'rep-pl', label: 'Profit & Loss', href: '/admin/reports/profit-loss', icon: ChartNoAxesCombined },
+          { id: 'rep-analytics', label: 'Business Analytics', href: '/admin/reports/analytics', icon: TrendingUp },
         ],
       },
     ],
@@ -172,13 +192,13 @@ const NAV_STRUCTURE: NavSection[] = [
         icon: Settings,
         href: '/admin/settings',
         subItems: [
-          { id: 'set-profile', label: 'Profile', href: '/admin/settings?tab=profile' },
-          { id: 'set-business', label: 'Business Settings', href: '/admin/settings?tab=business' },
-          { id: 'set-users', label: 'Users', href: '/admin/settings?tab=users' },
-          { id: 'set-roles', label: 'Roles & Permissions', href: '/admin/settings?tab=roles' },
-          { id: 'set-notif', label: 'Notifications', href: '/admin/settings?tab=notifications' },
-          { id: 'set-security', label: 'Security', href: '/admin/settings?tab=security' },
-          { id: 'set-integrations', label: 'Integrations', href: '/admin/settings?tab=integrations' },
+          { id: 'set-profile', label: 'Profile', href: '/admin/settings/profile', icon: User },
+          { id: 'set-business', label: 'Business Settings', href: '/admin/settings/business', icon: Building2 },
+          { id: 'set-users', label: 'Users', href: '/admin/settings/users', icon: Users },
+          { id: 'set-roles', label: 'Roles & Permissions', href: '/admin/settings/roles', icon: ShieldCheck },
+          { id: 'set-notif', label: 'Notifications', href: '/admin/settings/notifications', icon: Bell },
+          { id: 'set-security', label: 'Security', href: '/admin/settings/security', icon: LockKeyhole },
+          { id: 'set-integrations', label: 'Integrations', href: '/admin/settings/integrations', icon: Plug },
         ],
       },
     ],
@@ -288,8 +308,8 @@ export function AdminSidebar({
         </button>
       </div>
 
-      {/* Navigation Menu — Clean, unified, single scrollable area if needed, no double scrollbars */}
-      <nav className="p-3 space-y-5 flex-1 overflow-y-auto overflow-x-hidden [scrollbar-width:thin]">
+      {/* Navigation Menu — Clean, single scrollable area without double scrollbars */}
+      <nav className="p-3 space-y-4 flex-1 overflow-y-auto overflow-x-hidden [scrollbar-width:thin]">
         {NAV_STRUCTURE.map((section) => (
           <div key={section.title} className="space-y-1">
             {!collapsed && (
@@ -341,23 +361,61 @@ export function AdminSidebar({
                       )}
                     </button>
 
-                    {/* Submenu items */}
+                    {/* Submenu items — Expanded Desktop & Mobile view */}
                     {!collapsed && isGroupOpen && (
-                      <div className="pl-9 pr-1 space-y-0.5 border-l border-slate-100 dark:border-slate-800 ml-4 py-1">
+                      <div className="pl-3 space-y-0.5 border-l-2 border-slate-100 dark:border-slate-800 ml-4 py-1">
                         {item.subItems!.map((sub) => {
+                          const SubIcon = sub.icon;
                           const subActive = isItemActive(sub.href);
                           return (
                             <Link
                               key={sub.id}
                               href={sub.href}
                               onClick={onCloseMobile}
-                              className={`block px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                              title={sub.label}
+                              className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs transition-all group ${
                                 subActive
-                                  ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 font-semibold'
+                                  ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 font-semibold shadow-sm'
                                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/40'
                               }`}
                             >
-                              {sub.label}
+                              <SubIcon
+                                className={`w-[18px] h-[18px] shrink-0 transition-colors ${
+                                  subActive
+                                    ? 'text-red-600 dark:text-red-400'
+                                    : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white'
+                                }`}
+                                strokeWidth={1.8}
+                              />
+                              <span className="truncate">{sub.label}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* Submenu items — Collapsed Sidebar Icon-Only view with Tooltips */}
+                    {collapsed && isGroupOpen && (
+                      <div className="flex flex-col items-center space-y-1 py-1 bg-slate-50/70 dark:bg-[#0B0F19]/60 rounded-xl my-1 border border-slate-100 dark:border-slate-800/60">
+                        {item.subItems!.map((sub) => {
+                          const SubIcon = sub.icon;
+                          const subActive = isItemActive(sub.href);
+                          return (
+                            <Link
+                              key={sub.id}
+                              href={sub.href}
+                              onClick={onCloseMobile}
+                              title={sub.label}
+                              className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all group relative ${
+                                subActive
+                                  ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 shadow-sm'
+                                  : 'text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
+                              }`}
+                            >
+                              <SubIcon
+                                className="w-[18px] h-[18px] shrink-0"
+                                strokeWidth={1.8}
+                              />
                             </Link>
                           );
                         })}
@@ -367,7 +425,7 @@ export function AdminSidebar({
                 );
               }
 
-              // Standard Link Item
+              // Standard Link Item (Single Level)
               return (
                 <Link
                   key={item.id}

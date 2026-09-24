@@ -54,3 +54,9 @@ body {
 .float-b { animation: float-b 9s ease-in-out infinite; }
 .float-c { animation: float-c 11s ease-in-out infinite; }
 
+@media (prefers-reduced-motion: reduce) {
+  .float-a, .float-b, .float-c {
+    animation: none !important;
+  }
+}
+

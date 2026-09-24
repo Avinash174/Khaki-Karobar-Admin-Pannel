@@ -146,7 +146,7 @@ export default function DashboardPage() {
             <span className="text-xl">👋</span>
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Here is what is happening with Khaki Karobari business operations today.
+            Here is what is happening with Khaki Karobar business operations today.
           </p>
         </div>
 
@@ -260,7 +260,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-sm font-bold text-slate-900 dark:text-white">Top Performing Businesses</h2>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">Multi-tenant business units on Khaki Karobari</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Multi-tenant business units on Khaki Karobar</p>
             </div>
             <a
               href="/invoices"

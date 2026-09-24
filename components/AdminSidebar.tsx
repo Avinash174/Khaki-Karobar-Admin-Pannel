@@ -83,7 +83,7 @@ export function AdminSidebar({
             {!collapsed && (
               <div className="truncate">
                 <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white flex items-center gap-1">
-                  KHAKI <span className="text-red-600">KAROBARI</span>
+                  Khaki <span className="text-red-600">Karobar</span>
                 </span>
                 <p className="text-[9px] text-slate-400 uppercase tracking-widest font-mono">
                   By Khaki KrypTech

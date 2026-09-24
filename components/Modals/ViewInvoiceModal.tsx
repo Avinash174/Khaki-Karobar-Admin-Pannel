@@ -78,7 +78,7 @@ export function ViewInvoiceModal({ invoice, onClose, onSuccess }: ViewInvoiceMod
                   K
                 </div>
                 <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white">
-                  KHAKI KAROBARI
+                  KHAKI KAROBAR
                 </span>
               </div>
               <p className="text-slate-500">GST Registration: 27AABCK1234F1Z8</p>
@@ -166,7 +166,7 @@ export function ViewInvoiceModal({ invoice, onClose, onSuccess }: ViewInvoiceMod
         {/* Modal Bottom Actions */}
         <div className="p-4 bg-slate-50 dark:bg-[#0B0F19] border-t border-slate-100 dark:border-[#222E42] flex items-center justify-between">
           <p className="text-[11px] text-slate-400">
-            Automated statutory GST billing by Khaki Karobari
+            Automated statutory GST billing by Khaki Karobar
           </p>
           <div className="flex items-center gap-2">
             <button

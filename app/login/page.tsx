@@ -87,7 +87,7 @@ export default function LoginPage() {
     document.title = 'Khaki Karobar | Login';
     const savedToken = localStorage.getItem('khaki_access_token');
     if (savedToken) {
-      router.replace('/dashboard');
+      router.replace('/admin/dashboard');
     }
   }, [router]);
 
@@ -103,7 +103,7 @@ export default function LoginPage() {
         if (res.success) {
           localStorage.setItem('khaki_access_token', res.data.token);
           localStorage.setItem('khaki_user', JSON.stringify(res.data.user));
-          router.replace('/dashboard');
+          router.replace('/admin/dashboard');
         } else {
           setLoginError(res.error || 'Authentication failed. Please verify your credentials.');
         }
@@ -112,7 +112,7 @@ export default function LoginPage() {
         if (res.success) {
           localStorage.setItem('khaki_access_token', res.data.token);
           localStorage.setItem('khaki_user', JSON.stringify(res.data.user));
-          router.replace('/dashboard');
+          router.replace('/admin/dashboard');
         } else {
           setLoginError(res.error || 'Invalid OTP code. Please enter a valid 6-digit code.');
         }

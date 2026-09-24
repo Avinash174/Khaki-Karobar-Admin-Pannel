@@ -174,16 +174,37 @@ export function AdminHeader({
                 <span>Role: <strong className="text-slate-900 dark:text-white">{user?.role ?? 'SUPER_ADMIN'}</strong></span>
               </div>
 
-              <button
-                onClick={() => {
-                  setProfileOpen(false);
-                  onLogout();
-                }}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 font-semibold transition-colors"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                <span>Sign Out</span>
-              </button>
+              <div className="pt-1 border-t border-slate-100 dark:border-[#2A364F] space-y-0.5">
+                <a
+                  href="/admin/settings?tab=profile"
+                  onClick={() => setProfileOpen(false)}
+                  className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <User className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Profile</span>
+                </a>
+                <a
+                  href="/admin/settings"
+                  onClick={() => setProfileOpen(false)}
+                  className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <Settings className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Settings</span>
+                </a>
+              </div>
+
+              <div className="pt-1 border-t border-slate-100 dark:border-[#2A364F]">
+                <button
+                  onClick={() => {
+                    setProfileOpen(false);
+                    onLogout();
+                  }}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 font-semibold transition-colors"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
             </div>
           )}
         </div>

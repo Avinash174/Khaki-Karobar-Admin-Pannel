@@ -23,13 +23,19 @@ interface CommandPaletteProps {
 }
 
 const QUICK_ACTIONS = [
-  { label: 'Go to Dashboard & Overview', href: '/dashboard', icon: TrendingUp },
-  { label: 'View Invoices & Create Bill', href: '/invoices', icon: FileText },
-  { label: 'Customer CRM Directory', href: '/customers', icon: Users },
-  { label: 'Catalog Products & Inventory Stock', href: '/products', icon: Package },
-  { label: 'Ledgers & Double-Entry P&L', href: '/accounting', icon: CreditCard },
-  { label: 'GST Compliance (GSTR-1 & 3B)', href: '/gst', icon: Building2 },
-  { label: 'Payment Reconciliation Ledger', href: '/payments', icon: Receipt },
+  { label: 'Go to Dashboard & Overview', href: '/admin/dashboard', icon: TrendingUp },
+  { label: 'Leads CRM Pipeline', href: '/admin/leads', icon: Users },
+  { label: 'View Invoices & Create Bill', href: '/admin/sales/invoices', icon: FileText },
+  { label: 'Sales Orders & Bookings', href: '/admin/sales/orders', icon: TrendingUp },
+  { label: 'Customer CRM Directory', href: '/admin/customers', icon: Users },
+  { label: 'Suppliers & Vendors Directory', href: '/admin/suppliers', icon: Building2 },
+  { label: 'Catalog Products & Inventory Stock', href: '/admin/products', icon: Package },
+  { label: 'Stock Registry & Godowns', href: '/admin/inventory/stock', icon: Package },
+  { label: 'General Ledger & Day Book', href: '/admin/accounting/ledger', icon: CreditCard },
+  { label: 'GST Compliance (GSTR-1 & 3B)', href: '/admin/reports/gst', icon: Building2 },
+  { label: 'Payment Reconciliation Ledger', href: '/admin/payments', icon: Receipt },
+  { label: 'Business Expenses & Overheads', href: '/admin/expenses', icon: Receipt },
+  { label: 'System & Business Settings', href: '/admin/settings', icon: FileText },
 ];
 
 export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {

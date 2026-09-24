@@ -214,19 +214,23 @@ export function AdminSidebar({
         <Link
           href="/admin/dashboard"
           onClick={onCloseMobile}
-          className="flex items-center gap-3 overflow-hidden group"
+          className="flex items-center overflow-hidden group"
         >
-          <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center font-black text-white text-xl shadow-lg shadow-red-600/30 shrink-0 group-hover:scale-105 transition-transform">
-            K
-          </div>
-          {!collapsed && (
-            <div className="truncate">
-              <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white flex items-center gap-1">
-                Khaki <span className="text-red-600">Karobar</span>
-              </span>
-              <p className="text-[9px] text-slate-400 uppercase tracking-widest font-mono">
-                Business Management
-              </p>
+          {!collapsed ? (
+            <div className="bg-white px-2.5 py-1 rounded-xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs flex items-center group-hover:border-red-200 transition-colors">
+              <img
+                src="/logo.png"
+                alt="Khaki Karobar"
+                className="h-8 w-auto max-w-[185px] object-contain"
+              />
+            </div>
+          ) : (
+            <div className="w-10 h-10 rounded-xl bg-white border border-slate-200/80 dark:border-slate-800/80 p-1 flex items-center justify-center overflow-hidden shadow-xs group-hover:scale-105 transition-transform">
+              <img
+                src="/logo.png"
+                alt="Khaki Karobar"
+                className="max-w-none h-6 -translate-x-3.5 object-cover"
+              />
             </div>
           )}
         </Link>

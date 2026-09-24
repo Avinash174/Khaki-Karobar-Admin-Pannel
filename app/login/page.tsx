@@ -177,16 +177,12 @@ export default function LoginPage() {
         {/* Brand Header */}
         <header className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-red-600 flex items-center justify-center shadow-lg shadow-red-600/30 text-white font-black text-2xl tracking-tighter">
-              K
-            </div>
-            <div>
-              <span className="font-extrabold text-xl tracking-tight text-slate-900 dark:text-white">
-                Khaki <span className="text-red-600">Karobar</span>
-              </span>
-              <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                Enterprise Business & Accounting Platform
-              </p>
+            <div className="bg-white px-3 py-1.5 rounded-2xl border border-slate-200/90 dark:border-white/10 shadow-md">
+              <img
+                src="/logo.png"
+                alt="Khaki Karobar"
+                className="h-10 w-auto object-contain"
+              />
             </div>
           </div>
 
@@ -330,14 +326,13 @@ export default function LoginPage() {
 
         {/* Top bar with Theme Toggle & Mobile Logo */}
         <div className="w-full flex items-center justify-between pb-6">
-          <div className="lg:hidden flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-red-600 flex items-center justify-center text-white font-black text-lg shadow-md shadow-red-600/30">
-              K
-            </div>
-            <div>
-              <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white">
-                Khaki <span className="text-red-600">Karobar</span>
-              </span>
+          <div className="lg:hidden flex items-center">
+            <div className="bg-white px-2 py-1 rounded-xl border border-slate-200/90 dark:border-white/10 shadow-xs">
+              <img
+                src="/logo.png"
+                alt="Khaki Karobar"
+                className="h-7 w-auto object-contain"
+              />
             </div>
           </div>
           <div className="ml-auto">

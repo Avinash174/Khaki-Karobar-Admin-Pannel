@@ -21,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
-      <body className="min-h-screen bg-slate-50 dark:bg-[#090D16] text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-red-600 selection:text-white transition-colors duration-200">
+      <body className="bg-slate-50 dark:bg-[#090D16] text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-red-600 selection:text-white transition-colors duration-200">
         <ThemeProvider>
           {children}
         </ThemeProvider>

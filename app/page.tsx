@@ -327,7 +327,7 @@ export default function AdminDashboardPage() {
     };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#090D16] text-slate-900 dark:text-slate-100 flex transition-colors duration-200">
+    <div className="h-screen overflow-hidden bg-slate-50 dark:bg-[#090D16] text-slate-900 dark:text-slate-100 flex transition-colors duration-200">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 p-4 bg-slate-900 text-white dark:bg-white dark:text-slate-900 rounded-2xl shadow-2xl text-xs font-semibold flex items-center gap-2.5 animate-in slide-in-from-bottom duration-200">
@@ -390,7 +390,7 @@ export default function AdminDashboardPage() {
       />
 
       {/* Main Layout Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         <AdminHeader
           user={user}
           activeBusiness={activeBusiness}
@@ -400,7 +400,7 @@ export default function AdminDashboardPage() {
         />
 
         {/* Content Body */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
           {/* Header Action Bar */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>

@@ -64,7 +64,7 @@ export function AdminSidebar({
 
   const content = (
     <aside
-      className={`h-full bg-white dark:bg-[#121927] border-r border-slate-200/80 dark:border-[#222E42] flex flex-col justify-between transition-all duration-300 ${
+      className={`h-screen sticky top-0 bg-white dark:bg-[#121927] border-r border-slate-200/80 dark:border-[#222E42] flex flex-col justify-between transition-all duration-300 ${
         collapsed ? 'w-20' : 'w-64'
       }`}
     >
@@ -97,7 +97,7 @@ export function AdminSidebar({
         </div>
 
         {/* Navigation Groups */}
-        <div className="p-3 space-y-6 overflow-y-auto">
+        <div className="p-3 space-y-6">
           {navSections.map((section, sIdx) => (
             <div key={sIdx} className="space-y-1.5">
               {!collapsed && (
@@ -167,7 +167,7 @@ export function AdminSidebar({
   return (
     <>
       {/* Desktop Persistent Sidebar */}
-      <div className="hidden lg:block shrink-0">{content}</div>
+      <div className="hidden lg:block h-screen shrink-0">{content}</div>
 
       {/* Mobile Slide-over Drawer */}
       {isOpenMobile && (

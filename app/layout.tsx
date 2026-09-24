@@ -11,7 +11,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'Khaki Karobari — Enterprise Business Admin & ERP',
-  description: 'Production Business Management System for Billing, Accounting, GST, and Operations by Khaki KrypTech (India) Pvt. Ltd.',
+  description:
+    'Production Business Management System for Billing, Accounting, GST, and Operations by Khaki KrypTech (India) Pvt. Ltd.',
 };
 
 export default function RootLayout({
@@ -22,9 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
       <body className="bg-slate-50 dark:bg-[#090D16] text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-red-600 selection:text-white transition-colors duration-200">
-        <ThemeProvider>
-          {children}
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

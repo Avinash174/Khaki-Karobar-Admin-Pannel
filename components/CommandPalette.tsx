@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Search,
   FileText,
@@ -11,55 +12,56 @@ import {
   X,
   ArrowRight,
   TrendingUp,
+  Receipt,
 } from 'lucide-react';
 
 interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectTab: (tab: any) => void;
+  /** @deprecated — use router navigation internally */
+  onSelectTab?: (tab: any) => void;
 }
 
-export function CommandPalette({ isOpen, onClose, onSelectTab }: CommandPaletteProps) {
+const QUICK_ACTIONS = [
+  { label: 'Go to Dashboard & Overview', href: '/dashboard', icon: TrendingUp },
+  { label: 'View Invoices & Create Bill', href: '/invoices', icon: FileText },
+  { label: 'Customer CRM Directory', href: '/customers', icon: Users },
+  { label: 'Catalog Products & Inventory Stock', href: '/products', icon: Package },
+  { label: 'Ledgers & Double-Entry P&L', href: '/accounting', icon: CreditCard },
+  { label: 'GST Compliance (GSTR-1 & 3B)', href: '/gst', icon: Building2 },
+  { label: 'Payment Reconciliation Ledger', href: '/payments', icon: Receipt },
+];
+
+export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
+  const router = useRouter();
   const [query, setQuery] = useState('');
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        if (isOpen) onClose();
-        else onClose(); // parent handles toggle
-      }
       if (e.key === 'Escape' && isOpen) {
         onClose();
       }
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
+  // Reset query when opened
+  useEffect(() => {
+    if (isOpen) setQuery('');
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
-  const quickActions = [
-    {
-      category: 'Navigation',
-      items: [
-        { label: 'Go to Dashboard & Overview', tab: 'dashboard', icon: TrendingUp },
-        { label: 'View Invoices & Create Bill', tab: 'invoices', icon: FileText },
-        { label: 'Customer CRM Directory', tab: 'customers', icon: Users },
-        { label: 'Catalog Products & Inventory Stock', tab: 'products', icon: Package },
-        { label: 'Ledgers & Double-Entry P&L', tab: 'accounting', icon: CreditCard },
-        { label: 'GST Compliance (GSTR-1 & 3B)', tab: 'gst', icon: Building2 },
-      ],
-    },
-  ];
-
-  const filteredItems = quickActions[0].items.filter((item) =>
+  const filteredItems = QUICK_ACTIONS.filter((item) =>
     item.label.toLowerCase().includes(query.toLowerCase())
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
+    <div
+      className="fixed inset-0 z-[200] flex items-start justify-center pt-20 px-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150"
+      onClick={onClose}
+    >
       <div
         className="w-full max-w-xl bg-white dark:bg-[#121927] border border-slate-200 dark:border-[#2A364F] rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
@@ -95,7 +97,7 @@ export function CommandPalette({ isOpen, onClose, onSelectTab }: CommandPaletteP
                 <button
                   key={idx}
                   onClick={() => {
-                    onSelectTab(item.tab);
+                    router.push(item.href);
                     onClose();
                   }}
                   className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-600 dark:hover:text-red-400 transition-colors group"

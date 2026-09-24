@@ -1,6 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import {
   LayoutDashboard,
   FileText,
@@ -9,8 +11,6 @@ import {
   CreditCard,
   Building2,
   Receipt,
-  ShoppingBag,
-  Sparkles,
   ChevronLeft,
   ChevronRight,
   X,
@@ -25,9 +25,27 @@ export type AdminTab =
   | 'gst'
   | 'payments';
 
+const NAV_SECTIONS = [
+  {
+    title: 'Operations',
+    items: [
+      { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
+      { id: 'invoices', label: 'Sales & Invoices', icon: FileText, href: '/invoices' },
+      { id: 'customers', label: 'Customers CRM', icon: Users, href: '/customers' },
+      { id: 'products', label: 'Products & Stock', icon: Package, href: '/products' },
+    ],
+  },
+  {
+    title: 'Finance & Statutory',
+    items: [
+      { id: 'accounting', label: 'Accounting & P&L', icon: CreditCard, href: '/accounting' },
+      { id: 'gst', label: 'GST Compliance', icon: Building2, href: '/gst' },
+      { id: 'payments', label: 'Payment Ledger', icon: Receipt, href: '/payments' },
+    ],
+  },
+];
+
 interface AdminSidebarProps {
-  activeTab: AdminTab;
-  onSelectTab: (tab: AdminTab) => void;
   isOpenMobile: boolean;
   onCloseMobile: () => void;
   collapsed: boolean;
@@ -35,32 +53,19 @@ interface AdminSidebarProps {
 }
 
 export function AdminSidebar({
-  activeTab,
-  onSelectTab,
   isOpenMobile,
   onCloseMobile,
   collapsed,
   onToggleCollapse,
 }: AdminSidebarProps) {
-  const navSections = [
-    {
-      title: 'Operations',
-      items: [
-        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-        { id: 'invoices', label: 'Sales & Invoices', icon: FileText },
-        { id: 'customers', label: 'Customers CRM', icon: Users },
-        { id: 'products', label: 'Products & Stock', icon: Package },
-      ],
-    },
-    {
-      title: 'Finance & Statutory',
-      items: [
-        { id: 'accounting', label: 'Accounting & P&L', icon: CreditCard },
-        { id: 'gst', label: 'GST Compliance', icon: Building2 },
-        { id: 'payments', label: 'Payment Ledger', icon: Receipt },
-      ],
-    },
-  ];
+  const pathname = usePathname();
+
+  // Determine active nav item: pathname starts with the href
+  const isActive = (href: string) => {
+    // /dashboard should only match /dashboard exactly
+    if (href === '/dashboard') return pathname === '/dashboard' || pathname === '/';
+    return pathname.startsWith(href);
+  };
 
   const content = (
     <aside
@@ -69,8 +74,8 @@ export function AdminSidebar({
       }`}
     >
       {/* Brand Header */}
-      <div>
-        <div className="h-16 px-4 flex items-center justify-between border-b border-slate-100 dark:border-[#222E42]">
+      <div className="flex flex-col flex-1 min-h-0">
+        <div className="h-16 px-4 flex items-center justify-between border-b border-slate-100 dark:border-[#222E42] shrink-0">
           <div className="flex items-center gap-3 overflow-hidden">
             <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center font-extrabold text-white text-xl shadow-lg shadow-red-600/30 shrink-0">
               K
@@ -91,14 +96,15 @@ export function AdminSidebar({
           <button
             onClick={onCloseMobile}
             className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg lg:hidden"
+            aria-label="Close sidebar"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Navigation Groups */}
-        <div className="p-3 space-y-6">
-          {navSections.map((section, sIdx) => (
+        {/* Navigation Groups — no overflow, sidebar never scrolls */}
+        <nav className="p-3 space-y-6 flex-1">
+          {NAV_SECTIONS.map((section, sIdx) => (
             <div key={sIdx} className="space-y-1.5">
               {!collapsed && (
                 <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-3">
@@ -107,45 +113,43 @@ export function AdminSidebar({
               )}
               {section.items.map((item) => {
                 const Icon = item.icon;
-                const isActive = activeTab === item.id;
+                const active = isActive(item.href);
 
                 return (
-                  <button
+                  <Link
                     key={item.id}
-                    onClick={() => {
-                      onSelectTab(item.id as AdminTab);
-                      onCloseMobile();
-                    }}
+                    href={item.href}
+                    onClick={onCloseMobile}
                     title={collapsed ? item.label : undefined}
                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all relative ${
-                      isActive
+                      active
                         ? 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 shadow-sm shadow-red-500/10'
                         : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white'
                     }`}
                   >
                     {/* Active Red Pill Indicator */}
-                    {isActive && (
+                    {active && (
                       <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-red-600 rounded-r-full" />
                     )}
 
                     <Icon
                       className={`w-4 h-4 shrink-0 transition-colors ${
-                        isActive
+                        active
                           ? 'text-red-600 dark:text-red-400'
                           : 'text-slate-400 dark:text-slate-500'
                       }`}
                     />
                     {!collapsed && <span className="truncate">{item.label}</span>}
-                  </button>
+                  </Link>
                 );
               })}
             </div>
           ))}
-        </div>
+        </nav>
       </div>
 
       {/* Footer Collapse Action (Desktop) */}
-      <div className="p-3 border-t border-slate-100 dark:border-[#222E42] hidden lg:block">
+      <div className="p-3 border-t border-slate-100 dark:border-[#222E42] hidden lg:block shrink-0">
         <button
           onClick={onToggleCollapse}
           className="w-full flex items-center justify-center gap-2 p-2 rounded-xl text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"

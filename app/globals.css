@@ -30,3 +30,27 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #4B5563;
 }
+
+/* ─── Login page: floating illustration animations ─────────────── */
+@keyframes float-a {
+  0%   { transform: translateY(0px) rotate(0deg); }
+  33%  { transform: translateY(-10px) rotate(1.5deg); }
+  66%  { transform: translateY(-4px) rotate(-1deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+@keyframes float-b {
+  0%   { transform: translateY(0px) rotate(0deg); }
+  40%  { transform: translateY(-14px) rotate(-2deg); }
+  70%  { transform: translateY(-6px) rotate(1deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+@keyframes float-c {
+  0%   { transform: translateY(0px) rotate(0deg); }
+  50%  { transform: translateY(-8px) rotate(2deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.float-a { animation: float-a 7s ease-in-out infinite; }
+.float-b { animation: float-b 9s ease-in-out infinite; }
+.float-c { animation: float-c 11s ease-in-out infinite; }
+

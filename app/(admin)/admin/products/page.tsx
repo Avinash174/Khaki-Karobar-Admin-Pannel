@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Package, Plus, Search, CheckCircle2, ArrowRight, AlertTriangle, Layers } from 'lucide-react';
-import { productService } from '@/lib/api';
+import { productService, extractItems } from '@/lib/api';
 import { AddProductModal } from '@/components/Modals/AddProductModal';
 import { AdminBreadcrumb } from '@/components/AdminBreadcrumb';
 
@@ -25,7 +25,7 @@ export default function AdminProductsPage() {
       setLoading(true);
       try {
         const res = await productService.getProducts();
-        if (res.success) setProducts(res.data || []);
+        if (res.success) setProducts(extractItems(res.data));
       } catch (err) {
         console.error('Products load error:', err);
       } finally {
@@ -39,7 +39,7 @@ export default function AdminProductsPage() {
     (p) =>
       p.name?.toLowerCase().includes(search.toLowerCase()) ||
       p.sku?.toLowerCase().includes(search.toLowerCase()) ||
-      p.category?.toLowerCase().includes(search.toLowerCase())
+      (p.category?.name || p.category || '').toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -127,28 +127,28 @@ export default function AdminProductsPage() {
                   <tr key={p.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
                     <td className="p-4">
                       <div className="font-bold text-slate-900 dark:text-white text-sm">{p.name}</div>
-                      <div className="font-mono text-slate-400 text-[11px] mt-0.5">{p.sku || 'SKU-GEN-001'}</div>
+                      <div className="font-mono text-slate-400 text-[11px] mt-0.5">{p.sku || p.barcode || '—'}</div>
                     </td>
                     <td className="p-4">
                       <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium">
-                        {p.category || 'General'}
+                        {p.category?.name || p.category || 'General'}
                       </span>
                     </td>
                     <td className="p-4 font-mono font-bold text-slate-900 dark:text-white text-sm">
-                      ₹{Number(p.price || 0).toLocaleString('en-IN')}
+                      ₹{Number(p.sellingPrice ?? p.price ?? 0).toLocaleString('en-IN')}
                     </td>
                     <td className="p-4 font-mono text-slate-500">
-                      {p.taxRate ?? 18}%
+                      {p.gstRate ?? p.taxRate ?? 18}%
                     </td>
                     <td className="p-4">
                       <span
                         className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold font-mono ${
-                          Number(p.stock || 0) < 10
+                          Number(p.currentStock ?? p.stock ?? 0) <= Number(p.minStockAlert ?? 5)
                             ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-600 border border-rose-200'
                             : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 border border-emerald-200'
                         }`}
                       >
-                        {Number(p.stock || 0)} {p.unit || 'Units'}
+                        {Number(p.currentStock ?? p.stock ?? 0)} {p.unit || 'PCS'}
                       </span>
                     </td>
                     <td className="p-4 text-right">

@@ -30,6 +30,7 @@ import {
   paymentService,
   accountingService,
   gstService,
+  extractItems,
 } from '@/lib/api';
 import { KpiCard } from '@/components/KpiCard';
 import { RevenueChart } from '@/components/RevenueChart';
@@ -97,10 +98,10 @@ export default function AdminDashboardPage() {
 
         if (dashRes.status === 'fulfilled' && dashRes.value.success) setAdminStats(dashRes.value.data);
         if (bizRes.status === 'fulfilled' && bizRes.value.success) setBizOverview(bizRes.value.data);
-        if (custRes.status === 'fulfilled' && custRes.value.success) setCustomers(custRes.value.data || []);
-        if (prodRes.status === 'fulfilled' && prodRes.value.success) setProducts(prodRes.value.data || []);
-        if (invRes.status === 'fulfilled' && invRes.value.success) setInvoices(invRes.value.data || []);
-        if (payRes.status === 'fulfilled' && payRes.value.success) setPayments(payRes.value.data || []);
+        if (custRes.status === 'fulfilled' && custRes.value.success) setCustomers(extractItems(custRes.value.data));
+        if (prodRes.status === 'fulfilled' && prodRes.value.success) setProducts(extractItems(prodRes.value.data));
+        if (invRes.status === 'fulfilled' && invRes.value.success) setInvoices(extractItems(invRes.value.data));
+        if (payRes.status === 'fulfilled' && payRes.value.success) setPayments(extractItems(payRes.value.data));
         if (dbRes.status === 'fulfilled' && dbRes.value.success) setDayBook(dbRes.value.data);
         if (plRes.status === 'fulfilled' && plRes.value.success) setProfitAndLoss(plRes.value.data);
         if (gstRes.status === 'fulfilled' && gstRes.value.success) setGstSummary(gstRes.value.data);
@@ -200,7 +201,7 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard
           title="Total Sales"
-          value={`₹${(adminStats?.salesOverview?.totalSales ?? bizOverview?.metrics?.todaySales ?? 45500).toLocaleString('en-IN')}`}
+          value={`₹${(adminStats?.overview?.totalSales ?? bizOverview?.todaySales ?? 0).toLocaleString('en-IN')}`}
           change="+14.2%"
           isPositive={true}
           icon={TrendingUp}
@@ -209,14 +210,14 @@ export default function AdminDashboardPage() {
         />
         <KpiCard
           title="Today's Sales"
-          value={`₹${(bizOverview?.metrics?.todaySales ?? 23364).toLocaleString('en-IN')}`}
+          value={`₹${(bizOverview?.todaySales ?? 0).toLocaleString('en-IN')}`}
           change="+8.5%"
           isPositive={true}
           icon={FileText}
         />
         <KpiCard
           title="Total Purchases"
-          value="₹18,400"
+          value={`₹${(adminStats?.overview?.totalPurchases ?? bizOverview?.todayPurchase ?? 0).toLocaleString('en-IN')}`}
           change="+5.1%"
           isPositive={true}
           icon={ShoppingCart}
@@ -225,8 +226,8 @@ export default function AdminDashboardPage() {
         />
         <KpiCard
           title="Outstanding Due"
-          value={`₹${(bizOverview?.metrics?.totalReceivables ?? 5300).toLocaleString('en-IN')}`}
-          change="2 Pending"
+          value={`₹${(adminStats?.overview?.outstandingPayments ?? bizOverview?.totalReceivables ?? 0).toLocaleString('en-IN')}`}
+          change="Receivables"
           isPositive={false}
           icon={CreditCard}
           accentColor="bg-amber-500/10"
@@ -242,7 +243,7 @@ export default function AdminDashboardPage() {
           </div>
           <div>
             <p className="text-xs text-slate-500 dark:text-slate-400">Total Customers</p>
-            <p className="text-lg font-bold text-slate-900 dark:text-white">{customers.length || 8}</p>
+            <p className="text-lg font-bold text-slate-900 dark:text-white">{adminStats?.overview?.totalCustomers ?? customers.length}</p>
           </div>
         </div>
 
@@ -252,7 +253,7 @@ export default function AdminDashboardPage() {
           </div>
           <div>
             <p className="text-xs text-slate-500 dark:text-slate-400">Active Products</p>
-            <p className="text-lg font-bold text-slate-900 dark:text-white">{products.length || 12}</p>
+            <p className="text-lg font-bold text-slate-900 dark:text-white">{adminStats?.overview?.totalProducts ?? products.length}</p>
           </div>
         </div>
 
@@ -262,7 +263,9 @@ export default function AdminDashboardPage() {
           </div>
           <div>
             <p className="text-xs text-slate-500 dark:text-slate-400">Low Stock Alert</p>
-            <p className="text-lg font-bold text-rose-600 dark:text-rose-400">2 Items</p>
+            <p className="text-lg font-bold text-rose-600 dark:text-rose-400">
+              {adminStats?.overview?.lowStockProducts ?? bizOverview?.lowStockCount ?? 0} Items
+            </p>
           </div>
         </div>
 

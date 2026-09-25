@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Plus, CheckCircle2, Users, Search, Phone, Mail, ArrowRight, ExternalLink } from 'lucide-react';
-import { customerService } from '@/lib/api';
+import { customerService, extractItems } from '@/lib/api';
 import { AddCustomerModal } from '@/components/Modals/AddCustomerModal';
 import { AdminBreadcrumb } from '@/components/AdminBreadcrumb';
 
@@ -25,7 +25,7 @@ export default function AdminCustomersPage() {
       setLoading(true);
       try {
         const res = await customerService.getCustomers();
-        if (res.success) setCustomers(res.data || []);
+        if (res.success) setCustomers(extractItems(res.data));
       } catch (err) {
         console.error('Customers load error:', err);
       } finally {
@@ -144,8 +144,8 @@ export default function AdminCustomersPage() {
                       )}
                     </td>
                     <td className="p-4 font-mono font-bold">
-                      <span className={Number(c.balance || 0) > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'}>
-                        ₹{Number(c.balance || 0).toLocaleString('en-IN')}
+                      <span className={Number(c.currentBalance ?? c.balance ?? 0) > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'}>
+                        ₹{Number(c.currentBalance ?? c.balance ?? 0).toLocaleString('en-IN')}
                       </span>
                     </td>
                     <td className="p-4 font-mono text-slate-500">

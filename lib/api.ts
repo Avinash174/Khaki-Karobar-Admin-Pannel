@@ -35,33 +35,58 @@ apiClient.interceptors.request.use((config) => {
 
 // Response interceptor with queue to handle token refresh on 401 without race conditions
 let isRefreshing = false;
+let isRedirectingToLogin = false;
 let failedQueue: Array<{
   resolve: (value?: unknown) => void;
   reject: (reason?: any) => void;
 }> = [];
 
-const processQueue = (error: any = null) => {
+const processQueue = (error: any = null, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
     } else {
-      prom.resolve();
+      prom.resolve(token);
     }
   });
   failedQueue = [];
 };
 
+const clearAuthAndRedirectToLogin = () => {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem('khaki_access_token');
+  localStorage.removeItem('khaki_refresh_token');
+  localStorage.removeItem('khaki_user');
+  localStorage.removeItem('khaki_active_business_id');
+
+  if (window.location.pathname !== '/login' && !isRedirectingToLogin) {
+    isRedirectingToLogin = true;
+    window.location.href = '/login';
+  }
+};
+
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (typeof window !== 'undefined' && window.location.pathname === '/login') {
+      isRedirectingToLogin = false;
+    }
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry && typeof window !== 'undefined') {
+    if (!originalRequest) return Promise.reject(error);
+
+    const isAuthEndpoint =
+      originalRequest.url?.includes('/auth/login') ||
+      originalRequest.url?.includes('/auth/refresh') ||
+      originalRequest.url?.includes('/auth/otp');
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint && typeof window !== 'undefined') {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
-          .then(() => {
-            const token = localStorage.getItem('khaki_access_token');
+          .then((token) => {
             if (token) {
               originalRequest.headers.Authorization = `Bearer ${token}`;
             }
@@ -74,35 +99,29 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       const refreshToken = localStorage.getItem('khaki_refresh_token');
-      if (refreshToken) {
+      if (refreshToken && refreshToken !== 'undefined' && refreshToken !== 'null') {
         try {
           const res = await axios.post(`${API_BASE_URL}/auth/refresh-token`, { refreshToken });
-          const newAccessToken = res.data?.data?.accessToken;
+          const newAccessToken = res.data?.data?.accessToken || res.data?.accessToken;
           if (newAccessToken) {
             localStorage.setItem('khaki_access_token', newAccessToken);
             originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-            processQueue(null);
+            processQueue(null, newAccessToken);
             return apiClient(originalRequest);
           } else {
             throw new Error('No access token in refresh response');
           }
         } catch (refreshErr) {
-          processQueue(refreshErr);
-          localStorage.removeItem('khaki_access_token');
-          localStorage.removeItem('khaki_refresh_token');
-          localStorage.removeItem('khaki_user');
-          if (window.location.pathname !== '/login') {
-            window.location.href = '/login';
-          }
+          processQueue(refreshErr, null);
+          clearAuthAndRedirectToLogin();
           return Promise.reject(refreshErr);
         } finally {
           isRefreshing = false;
         }
       } else {
         isRefreshing = false;
-        if (window.location.pathname !== '/login') {
-          window.location.href = '/login';
-        }
+        processQueue(error, null);
+        clearAuthAndRedirectToLogin();
       }
     }
     return Promise.reject(error);

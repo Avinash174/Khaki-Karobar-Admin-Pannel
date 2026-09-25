@@ -86,8 +86,13 @@ export default function LoginPage() {
   useEffect(() => {
     document.title = 'Khaki Karobar | Login';
     const savedToken = localStorage.getItem('khaki_access_token');
-    if (savedToken) {
+    if (savedToken && savedToken !== 'undefined' && savedToken !== 'null' && savedToken.trim().length > 10) {
       router.replace('/admin/dashboard');
+    } else {
+      localStorage.removeItem('khaki_access_token');
+      localStorage.removeItem('khaki_refresh_token');
+      localStorage.removeItem('khaki_user');
+      localStorage.removeItem('khaki_active_business_id');
     }
   }, [router]);
 
@@ -100,25 +105,51 @@ export default function LoginPage() {
     try {
       if (loginMode === 'password') {
         const res = await adminService.login(loginPhone, loginPassword);
-        if (res.success) {
-          localStorage.setItem('khaki_access_token', res.data.token);
-          localStorage.setItem('khaki_user', JSON.stringify(res.data.user));
+        const token = res.data?.accessToken || res.data?.token || res.accessToken || res.token;
+        const refreshToken = res.data?.refreshToken || res.refreshToken;
+        const userData = res.data?.user || res.user;
+        const activeBiz = res.data?.activeBusiness || res.activeBusiness;
+
+        if (res.success && token) {
+          localStorage.setItem('khaki_access_token', token);
+          if (refreshToken) {
+            localStorage.setItem('khaki_refresh_token', refreshToken);
+          }
+          if (userData) {
+            localStorage.setItem('khaki_user', JSON.stringify(userData));
+          }
+          if (activeBiz?.id) {
+            localStorage.setItem('khaki_active_business_id', activeBiz.id);
+          }
           router.replace('/admin/dashboard');
         } else {
-          setLoginError(res.error || 'Authentication failed. Please verify your credentials.');
+          setLoginError(res.error || res.message || 'Authentication failed. Please verify your credentials.');
         }
       } else {
         const res = await adminService.verifyOtp(loginPhone, otpCode);
-        if (res.success) {
-          localStorage.setItem('khaki_access_token', res.data.token);
-          localStorage.setItem('khaki_user', JSON.stringify(res.data.user));
+        const token = res.data?.accessToken || res.data?.token || res.accessToken || res.token;
+        const refreshToken = res.data?.refreshToken || res.refreshToken;
+        const userData = res.data?.user || res.user;
+        const activeBiz = res.data?.activeBusiness || res.activeBusiness;
+
+        if (res.success && token) {
+          localStorage.setItem('khaki_access_token', token);
+          if (refreshToken) {
+            localStorage.setItem('khaki_refresh_token', refreshToken);
+          }
+          if (userData) {
+            localStorage.setItem('khaki_user', JSON.stringify(userData));
+          }
+          if (activeBiz?.id) {
+            localStorage.setItem('khaki_active_business_id', activeBiz.id);
+          }
           router.replace('/admin/dashboard');
         } else {
-          setLoginError(res.error || 'Invalid OTP code. Please enter a valid 6-digit code.');
+          setLoginError(res.error || res.message || 'Invalid OTP code. Please enter a valid 6-digit code.');
         }
       }
     } catch (err: any) {
-      setLoginError(err?.response?.data?.error || err.message || 'Unable to connect to the server. Please try again.');
+      setLoginError(err?.response?.data?.error || err?.response?.data?.message || err.message || 'Unable to connect to the server. Please try again.');
     } finally {
       setLoginLoading(false);
     }

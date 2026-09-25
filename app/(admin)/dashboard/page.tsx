@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   TrendingUp,
   FileText,
@@ -262,13 +263,13 @@ export default function DashboardPage() {
               <h2 className="text-sm font-bold text-slate-900 dark:text-white">Top Performing Businesses</h2>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">Multi-tenant business units on Khaki Karobar</p>
             </div>
-            <a
+            <Link
               href="/invoices"
               className="text-xs font-bold text-red-600 hover:text-red-700 flex items-center gap-1"
             >
               <span>View All Invoices</span>
               <ArrowRight className="w-3.5 h-3.5" />
-            </a>
+            </Link>
           </div>
           <TopBusinessesTable onManage={() => router.push('/invoices')} />
         </div>

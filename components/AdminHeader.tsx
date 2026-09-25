@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import {
   Menu,
   Search,
@@ -175,22 +176,22 @@ export function AdminHeader({
               </div>
 
               <div className="pt-1 border-t border-slate-100 dark:border-[#2A364F] space-y-0.5">
-                <a
+                <Link
                   href="/admin/settings?tab=profile"
                   onClick={() => setProfileOpen(false)}
                   className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 >
                   <User className="w-3.5 h-3.5 text-slate-400" />
                   <span>Profile</span>
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/admin/settings"
                   onClick={() => setProfileOpen(false)}
                   className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 >
                   <Settings className="w-3.5 h-3.5 text-slate-400" />
                   <span>Settings</span>
-                </a>
+                </Link>
               </div>
 
               <div className="pt-1 border-t border-slate-100 dark:border-[#2A364F]">

@@ -15,6 +15,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [toastMessage, setToastMessage] = useState('');
   const [user, setUser] = useState<any>(null);
   const [activeBusiness, setActiveBusiness] = useState<any>({ name: 'Khaki General Store' });
+  const [authStatus, setAuthStatus] = useState<'loading' | 'authenticated' | 'unauthenticated'>('loading');
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -25,21 +26,31 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     const savedToken = localStorage.getItem('khaki_access_token');
     const savedUser = localStorage.getItem('khaki_user');
-    if (!savedToken) {
+
+    if (!savedToken || savedToken === 'undefined' || savedToken === 'null' || savedToken.trim().length <= 10) {
+      localStorage.removeItem('khaki_access_token');
+      localStorage.removeItem('khaki_refresh_token');
+      localStorage.removeItem('khaki_user');
+      localStorage.removeItem('khaki_active_business_id');
+      setAuthStatus('unauthenticated');
       router.replace('/login');
       return;
     }
+
     if (savedUser) {
       try {
         setUser(JSON.parse(savedUser));
       } catch {}
     }
+    setAuthStatus('authenticated');
   }, [router]);
 
   const handleLogout = () => {
     localStorage.removeItem('khaki_access_token');
     localStorage.removeItem('khaki_refresh_token');
     localStorage.removeItem('khaki_user');
+    localStorage.removeItem('khaki_active_business_id');
+    setAuthStatus('unauthenticated');
     router.replace('/login');
   };
 
@@ -54,6 +65,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
+
+  if (authStatus === 'loading') {
+    return (
+      <div className="h-screen w-screen flex items-center justify-center bg-slate-50 dark:bg-[#090D16]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-slate-500 font-medium">Verifying Khaki Karobar Session...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (authStatus === 'unauthenticated') {
+    return null;
+  }
 
   return (
     <div className="h-screen overflow-hidden bg-slate-50 dark:bg-[#090D16] text-slate-900 dark:text-slate-100 flex transition-colors duration-200">
@@ -77,6 +103,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         onCloseMobile={() => setMobileSidebarOpen(false)}
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        onLogout={handleLogout}
       />
 
       {/* Main area: header + scrollable content */}

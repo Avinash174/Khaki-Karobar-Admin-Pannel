@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   LayoutDashboard,
@@ -156,6 +156,7 @@ export function AdminSidebar({
   onLogout,
 }: AdminSidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
 
   // Precise route active matching: guarantees only one item is active at a time
   const isItemActive = (href: string) => {
@@ -167,13 +168,30 @@ export function AdminSidebar({
     if (cleanHref === cleanPath) return true;
 
     // Special dashboard aliases
-    if (cleanHref === '/admin/dashboard' && (cleanPath === '/admin' || cleanPath === '/')) {
+    if (cleanHref === '/admin/dashboard' && (cleanPath === '/admin' || cleanPath === '/' || cleanPath === '/dashboard')) {
       return true;
     }
 
     // Special customer report alias check
     if (cleanHref === '/admin/reports/customers' && cleanPath === '/admin/reports/customer') {
       return true;
+    }
+
+    // Direct top-level alias matches
+    if (cleanHref.startsWith('/admin/')) {
+      const aliasPath = cleanHref.replace('/admin/', '/');
+      if (cleanPath === aliasPath || cleanPath.startsWith(aliasPath + '/')) {
+        return true;
+      }
+      if (cleanHref === '/admin/sales/invoices' && (cleanPath === '/invoices' || cleanPath.startsWith('/invoices/'))) {
+        return true;
+      }
+      if (cleanHref === '/admin/accounting/ledger' && (cleanPath === '/accounting' || cleanPath.startsWith('/accounting/'))) {
+        return true;
+      }
+      if (cleanHref === '/admin/reports/gst' && (cleanPath === '/gst' || cleanPath.startsWith('/gst/'))) {
+        return true;
+      }
     }
 
     // If current path starts with cleanHref + '/', verify there's no more specific route in the sidebar
@@ -199,7 +217,7 @@ export function AdminSidebar({
       localStorage.removeItem('khaki_access_token');
       localStorage.removeItem('khaki_refresh_token');
       localStorage.removeItem('khaki_user');
-      window.location.href = '/login';
+      router.replace('/login');
     }
   };
 

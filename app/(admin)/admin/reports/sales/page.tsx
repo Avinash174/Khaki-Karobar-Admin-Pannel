@@ -1,16 +1,34 @@
 'use client';
 
-import React from 'react';
-import { TrendingUp, Download, Calendar, Filter } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { TrendingUp, Download, RefreshCw, Calendar } from 'lucide-react';
+import { reportService, extractItems } from '@/lib/api';
 import { AdminBreadcrumb } from '@/components/AdminBreadcrumb';
 
 export default function SalesReportPage() {
-  const data = [
-    { period: 'Week 1 (Sep 01 - Sep 07)', count: 18, revenue: 64200, gst: 11556, netSales: 52644 },
-    { period: 'Week 2 (Sep 08 - Sep 14)', count: 24, revenue: 89400, gst: 16092, netSales: 73308 },
-    { period: 'Week 3 (Sep 15 - Sep 21)', count: 31, revenue: 112000, gst: 20160, netSales: 91840 },
-    { period: 'Week 4 (Sep 22 - Sep 28)', count: 14, revenue: 45500, gst: 8190, netSales: 37310 },
-  ];
+  const [report, setReport] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const res = await reportService.getSalesReport();
+      if (res.success) {
+        setReport(res.data);
+      }
+    } catch (err) {
+      console.error('Failed to load sales report:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const invoices = report?.invoices || [];
+  const summary = report?.summary || {};
 
   return (
     <div className="space-y-6 animate-in fade-in duration-150">
@@ -32,39 +50,104 @@ export default function SalesReportPage() {
           </p>
         </div>
 
-        <button
-          onClick={() => alert('Exporting Sales Report to Excel / CSV')}
-          className="px-4 py-2 bg-white dark:bg-[#121927] border border-slate-200 dark:border-[#222E42] text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-1.5"
-        >
-          <Download className="w-4 h-4 text-red-600" />
-          <span>Export CSV</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={loadData}
+            className="px-3 py-2 bg-white dark:bg-[#121927] border border-slate-200 dark:border-[#222E42] text-slate-700 dark:text-slate-300 rounded-xl text-xs font-semibold hover:bg-slate-50 transition-colors flex items-center gap-1.5 shadow-sm"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <span>Sync</span>
+          </button>
+          <button
+            onClick={() => alert('Consolidated sales report exported.')}
+            className="px-4 py-2 bg-white dark:bg-[#121927] border border-slate-200 dark:border-[#222E42] text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs hover:bg-slate-50 transition-colors shadow-sm flex items-center gap-1.5"
+          >
+            <Download className="w-4 h-4 text-red-600" />
+            <span>Export CSV</span>
+          </button>
+        </div>
       </div>
 
+      {/* KPI Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="bg-white dark:bg-[#121927] border border-slate-200/80 dark:border-[#222E42] rounded-2xl p-4 shadow-sm">
+          <p className="text-xs text-slate-400">Total Billed</p>
+          <p className="font-mono font-bold text-lg text-slate-900 dark:text-white mt-1">
+            ₹{Number(summary.totalInvoiced || 0).toLocaleString('en-IN')}
+          </p>
+          <span className="text-[10px] text-slate-400 font-medium">{summary.invoiceCount || 0} Invoices</span>
+        </div>
+
+        <div className="bg-white dark:bg-[#121927] border border-slate-200/80 dark:border-[#222E42] rounded-2xl p-4 shadow-sm">
+          <p className="text-xs text-slate-400">Taxable Outward</p>
+          <p className="font-mono font-bold text-lg text-slate-900 dark:text-white mt-1">
+            ₹{Number(summary.totalTaxable || 0).toLocaleString('en-IN')}
+          </p>
+          <span className="text-[10px] text-emerald-500 font-medium">Net Sales</span>
+        </div>
+
+        <div className="bg-white dark:bg-[#121927] border border-slate-200/80 dark:border-[#222E42] rounded-2xl p-4 shadow-sm">
+          <p className="text-xs text-slate-400">GST Collected</p>
+          <p className="font-mono font-bold text-lg text-purple-600 dark:text-purple-400 mt-1">
+            ₹{Number(summary.totalTax || 0).toLocaleString('en-IN')}
+          </p>
+          <span className="text-[10px] text-purple-500 font-medium">Output Liability</span>
+        </div>
+
+        <div className="bg-white dark:bg-[#121927] border border-slate-200/80 dark:border-[#222E42] rounded-2xl p-4 shadow-sm">
+          <p className="text-xs text-slate-400">Collected Revenue</p>
+          <p className="font-mono font-bold text-lg text-emerald-600 dark:text-emerald-400 mt-1">
+            ₹{Number(summary.totalReceived || 0).toLocaleString('en-IN')}
+          </p>
+          <span className="text-[10px] text-slate-400 font-medium">₹{Number(summary.totalPending || 0).toLocaleString('en-IN')} Pending</span>
+        </div>
+      </div>
+
+      {/* Table */}
       <div className="bg-white dark:bg-[#121927] border border-slate-200/80 dark:border-[#222E42] rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-50 dark:bg-[#0B0F19] border-b border-slate-200/80 dark:border-[#222E42] text-slate-500 uppercase tracking-wider font-semibold">
               <tr>
-                <th className="p-4">Billing Period</th>
-                <th className="p-4">Invoices Issued</th>
-                <th className="p-4">Taxable Outward (₹)</th>
-                <th className="p-4">GST Collected (₹)</th>
-                <th className="p-4 text-right">Gross Total Revenue (₹)</th>
+                <th className="p-4">Invoice #</th>
+                <th className="p-4">Customer</th>
+                <th className="p-4">Date</th>
+                <th className="p-4">Taxable Amount</th>
+                <th className="p-4">GST (₹)</th>
+                <th className="p-4 text-right">Grand Total (₹)</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {data.map((d, i) => (
-                <tr key={i} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-                  <td className="p-4 font-bold text-slate-900 dark:text-white">{d.period}</td>
-                  <td className="p-4 font-mono">{d.count} Invoices</td>
-                  <td className="p-4 font-mono text-slate-700 dark:text-slate-300">₹{d.netSales.toLocaleString('en-IN')}</td>
-                  <td className="p-4 font-mono text-slate-500">₹{d.gst.toLocaleString('en-IN')}</td>
-                  <td className="p-4 text-right font-mono font-bold text-slate-900 dark:text-white text-sm">
-                    ₹{d.revenue.toLocaleString('en-IN')}
-                  </td>
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="p-8 text-center text-slate-400">Generating live sales report...</td>
                 </tr>
-              ))}
+              ) : invoices.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="p-8 text-center text-slate-400">No sales transactions found for this period.</td>
+                </tr>
+              ) : (
+                invoices.map((inv: any) => (
+                  <tr key={inv.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                    <td className="p-4 font-mono font-bold text-slate-900 dark:text-white">{inv.invoiceNumber}</td>
+                    <td className="p-4 font-semibold text-slate-800 dark:text-slate-200">
+                      {inv.customer?.name || 'Cash Retail Customer'}
+                    </td>
+                    <td className="p-4 text-slate-500">
+                      {new Date(inv.invoiceDate || inv.createdAt).toLocaleDateString('en-IN')}
+                    </td>
+                    <td className="p-4 font-mono text-slate-600 dark:text-slate-400">
+                      ₹{Number(inv.taxableAmount || 0).toLocaleString('en-IN')}
+                    </td>
+                    <td className="p-4 font-mono text-purple-600 dark:text-purple-400 font-bold">
+                      ₹{Number(inv.totalTax || 0).toLocaleString('en-IN')}
+                    </td>
+                    <td className="p-4 text-right font-mono font-bold text-slate-900 dark:text-white">
+                      ₹{Number(inv.grandTotal || 0).toLocaleString('en-IN')}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

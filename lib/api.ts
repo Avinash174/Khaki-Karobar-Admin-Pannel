@@ -128,6 +128,14 @@ export const authService = {
     const res = await apiClient.get('/auth/me');
     return res.data;
   },
+  updateProfile: async (data: { name?: string; email?: string; avatar?: string }) => {
+    const res = await apiClient.put('/auth/profile', data);
+    return res.data;
+  },
+  changePassword: async (currentPassword: string, newPassword: string) => {
+    const res = await apiClient.post('/auth/change-password', { currentPassword, newPassword });
+    return res.data;
+  },
   logout: async () => {
     const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('khaki_refresh_token') : null;
     try {

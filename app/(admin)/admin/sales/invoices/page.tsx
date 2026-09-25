@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, CheckCircle2, FileText, Search, Eye, ArrowRight, Printer } from 'lucide-react';
-import { invoiceService, customerService, productService } from '@/lib/api';
+import { invoiceService, customerService, productService, extractItems } from '@/lib/api';
 import { CreateInvoiceDrawer } from '@/components/Modals/CreateInvoiceDrawer';
 import { ViewInvoiceModal } from '@/components/Modals/ViewInvoiceModal';
 import { AdminBreadcrumb } from '@/components/AdminBreadcrumb';
@@ -32,9 +32,9 @@ export default function SalesInvoicesPage() {
           customerService.getCustomers(),
           productService.getProducts(),
         ]);
-        if (invRes.status === 'fulfilled' && invRes.value.success) setInvoices(invRes.value.data || []);
-        if (custRes.status === 'fulfilled' && custRes.value.success) setCustomers(custRes.value.data || []);
-        if (prodRes.status === 'fulfilled' && prodRes.value.success) setProducts(prodRes.value.data || []);
+        if (invRes.status === 'fulfilled' && invRes.value.success) setInvoices(extractItems(invRes.value.data));
+        if (custRes.status === 'fulfilled' && custRes.value.success) setCustomers(extractItems(custRes.value.data));
+        if (prodRes.status === 'fulfilled' && prodRes.value.success) setProducts(extractItems(prodRes.value.data));
       } catch (err) {
         console.error('Invoices load error:', err);
       } finally {
@@ -150,24 +150,26 @@ export default function SalesInvoicesPage() {
                       <div className="text-[11px] text-slate-400">{inv.customer?.phone}</div>
                     </td>
                     <td className="p-4 text-slate-500">
-                      {new Date(inv.createdAt || Date.now()).toLocaleDateString('en-IN')}
+                      {new Date(inv.invoiceDate || inv.createdAt || Date.now()).toLocaleDateString('en-IN')}
                     </td>
                     <td className="p-4">
                       <span
                         className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                          inv.paymentStatus === 'PAID'
+                          inv.status === 'PAID'
                             ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 border border-emerald-200'
+                            : inv.status === 'CANCELLED'
+                            ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-600 border border-rose-200'
                             : 'bg-amber-50 dark:bg-amber-950/50 text-amber-600 border border-amber-200'
                         }`}
                       >
-                        {inv.paymentStatus || 'PAID'}
+                        {inv.status || 'ISSUED'}
                       </span>
                     </td>
                     <td className="p-4 font-mono text-slate-500">
-                      ₹{Number(inv.taxAmount || 0).toLocaleString('en-IN')}
+                      ₹{Number(inv.totalTax ?? inv.taxAmount ?? 0).toLocaleString('en-IN')}
                     </td>
                     <td className="p-4 font-mono font-bold text-slate-900 dark:text-white text-sm">
-                      ₹{Number(inv.totalAmount || 0).toLocaleString('en-IN')}
+                      ₹{Number(inv.grandTotal ?? inv.totalAmount ?? 0).toLocaleString('en-IN')}
                     </td>
                     <td className="p-4 text-right">
                       <button

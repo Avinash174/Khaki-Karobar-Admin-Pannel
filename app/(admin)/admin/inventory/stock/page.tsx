@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Package, Search, Plus, Filter, ArrowRight, AlertTriangle } from 'lucide-react';
-import { productService } from '@/lib/api';
+import { productService, extractItems } from '@/lib/api';
 import { AdminBreadcrumb } from '@/components/AdminBreadcrumb';
 
 export default function InventoryStockPage() {
@@ -16,7 +16,9 @@ export default function InventoryStockPage() {
       setLoading(true);
       try {
         const res = await productService.getProducts();
-        if (res.success) setProducts(res.data || []);
+        if (res.success) {
+          setProducts(extractItems(res.data));
+        }
       } catch (err) {
         console.error('Stock load error:', err);
       } finally {
@@ -89,8 +91,8 @@ export default function InventoryStockPage() {
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {filtered.map((p) => {
-                const stock = Number(p.stock || 0);
-                const price = Number(p.price || 0);
+                const stock = Number(p.currentStock ?? p.stock ?? 0);
+                const price = Number(p.sellingPrice ?? p.price ?? 0);
                 const valuation = stock * price;
                 return (
                   <tr key={p.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">

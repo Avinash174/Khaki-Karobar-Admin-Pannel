@@ -3,56 +3,83 @@
 import React, { useState, useEffect } from 'react';
 import { User, Lock, Save, CheckCircle2, Upload, AlertCircle } from 'lucide-react';
 
+import { authService } from '@/lib/api';
+
 export default function ProfileSettingsPage() {
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileSuccess, setProfileSuccess] = useState(false);
+  const [profileError, setProfileError] = useState('');
   const [passwordSaving, setPasswordSaving] = useState(false);
   const [passwordSuccess, setPasswordSuccess] = useState(false);
   const [passwordError, setPasswordError] = useState('');
 
-  const [name, setName] = useState('Avinash Magar');
-  const [email, setEmail] = useState('avinash@khaki.in');
-  const [phone, setPhone] = useState('9876543210');
-  const [designation, setDesignation] = useState('Managing Director & Founder');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [designation, setDesignation] = useState('Enterprise Administrator');
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('khaki_user');
-    if (savedUser) {
+    async function loadProfile() {
       try {
-        const u = JSON.parse(savedUser);
-        if (u.name) setName(u.name);
-        if (u.phone) setPhone(u.phone);
-        if (u.email) setEmail(u.email);
-      } catch {}
+        const res = await authService.getMe();
+        if (res.success && res.data) {
+          const u = res.data;
+          if (u.name) setName(u.name);
+          if (u.phone) setPhone(u.phone);
+          if (u.email) setEmail(u.email);
+          if (u.role) setDesignation(u.role === 'ADMIN' ? 'Platform Administrator' : 'Business Owner');
+        }
+      } catch (err) {
+        // Fallback to local storage if offline
+        const savedUser = localStorage.getItem('khaki_user');
+        if (savedUser) {
+          try {
+            const u = JSON.parse(savedUser);
+            if (u.name) setName(u.name);
+            if (u.phone) setPhone(u.phone);
+            if (u.email) setEmail(u.email);
+          } catch {}
+        }
+      }
     }
+    loadProfile();
   }, []);
 
-  const handleProfileSubmit = (e: React.FormEvent) => {
+  const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setProfileSaving(true);
     setProfileSuccess(false);
+    setProfileError('');
 
-    setTimeout(() => {
+    try {
+      const res = await authService.updateProfile({ name, email });
+      if (res.success) {
+        setProfileSuccess(true);
+        // Sync local storage
+        const existing = localStorage.getItem('khaki_user');
+        let u = {};
+        try { u = existing ? JSON.parse(existing) : {}; } catch {}
+        localStorage.setItem('khaki_user', JSON.stringify({ ...u, name, email }));
+        setTimeout(() => setProfileSuccess(false), 4000);
+      } else {
+        setProfileError(res.message || 'Failed to update profile');
+      }
+    } catch (err: any) {
+      setProfileError(err.response?.data?.message || err.message || 'Network error updating profile');
+    } finally {
       setProfileSaving(false);
-      setProfileSuccess(true);
-      // Persist updated user
-      const existing = localStorage.getItem('khaki_user');
-      let u = {};
-      try { u = existing ? JSON.parse(existing) : {}; } catch {}
-      localStorage.setItem('khaki_user', JSON.stringify({ ...u, name, phone, email }));
-      setTimeout(() => setProfileSuccess(false), 4000);
-    }, 700);
+    }
   };
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setPasswordError('');
-    if (newPassword.length < 8) {
-      setPasswordError('New password must be at least 8 characters long.');
+    if (newPassword.length < 6) {
+      setPasswordError('New password must be at least 6 characters long.');
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -62,14 +89,22 @@ export default function ProfileSettingsPage() {
 
     setPasswordSaving(true);
     setPasswordSuccess(false);
-    setTimeout(() => {
+    try {
+      const res = await authService.changePassword(currentPassword, newPassword);
+      if (res.success) {
+        setPasswordSuccess(true);
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+        setTimeout(() => setPasswordSuccess(false), 4000);
+      } else {
+        setPasswordError(res.message || 'Failed to update password');
+      }
+    } catch (err: any) {
+      setPasswordError(err.response?.data?.message || err.message || 'Error changing password');
+    } finally {
       setPasswordSaving(false);
-      setPasswordSuccess(true);
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-      setTimeout(() => setPasswordSuccess(false), 4000);
-    }, 800);
+    }
   };
 
   return (
@@ -90,6 +125,13 @@ export default function ProfileSettingsPage() {
           <div className="p-3.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-xl flex items-center gap-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
             <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
             <span>Profile information successfully updated and saved.</span>
+          </div>
+        )}
+
+        {profileError && (
+          <div className="p-3.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 rounded-xl flex items-center gap-2 text-xs font-semibold text-rose-700 dark:text-rose-300">
+            <AlertCircle className="w-4 h-4 text-rose-500 shrink-0" />
+            <span>{profileError}</span>
           </div>
         )}
 

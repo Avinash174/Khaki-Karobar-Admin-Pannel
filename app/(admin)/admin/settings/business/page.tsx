@@ -1,39 +1,89 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Building2, Save, Upload, Trash2, CheckCircle2, ShieldCheck, Globe } from 'lucide-react';
+import { businessService } from '@/lib/api';
 
 export default function BusinessSettingsPage() {
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [successToast, setSuccessToast] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const [businessName, setBusinessName] = useState('Khaki Karobar');
+  const [businessName, setBusinessName] = useState('');
   const [businessType, setBusinessType] = useState('PRIVATE_LIMITED');
-  const [email, setEmail] = useState('contact@khaki.in');
-  const [phone, setPhone] = useState('9876543210');
-  const [website, setWebsite] = useState('https://khakikarobar.com');
-  const [address, setAddress] = useState('Survey No. 45/2, Baner Business Hub');
-  const [city, setCity] = useState('Pune');
-  const [state, setState] = useState('Maharashtra');
-  const [pincode, setPincode] = useState('411045');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [website, setWebsite] = useState('');
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [pincode, setPincode] = useState('');
   const [country, setCountry] = useState('India');
 
-  const [gstin, setGstin] = useState('27AABCK1234D1ZX');
-  const [pan, setPan] = useState('AABCK1234D');
+  const [gstin, setGstin] = useState('');
+  const [pan, setPan] = useState('');
   const [regType, setRegType] = useState('REGULAR');
   const [stateCode, setStateCode] = useState('27 (Maharashtra)');
 
   const [logoPreview, setLogoPreview] = useState<string | null>('/branding/logo.png');
 
-  const handleSave = (e: React.FormEvent) => {
+  useEffect(() => {
+    async function load() {
+      setLoading(true);
+      try {
+        const res = await businessService.getCurrentBusiness();
+        if (res.success && res.data) {
+          const b = res.data;
+          setBusinessName(b.name || '');
+          setEmail(b.email || '');
+          setPhone(b.phone || '');
+          setAddress(b.address || '');
+          setCity(b.city || '');
+          setState(b.state || '');
+          setPincode(b.pincode || '');
+          setGstin(b.gstin || '');
+          setPan(b.pan || '');
+          if (b.stateCode) setStateCode(b.stateCode);
+        }
+      } catch (err) {
+        console.error('Failed to load business profile:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     setSuccessToast(false);
-    setTimeout(() => {
+    setErrorMsg('');
+    try {
+      const res = await businessService.updateCurrentBusiness({
+        name: businessName,
+        email: email || undefined,
+        phone: phone || undefined,
+        address: address || undefined,
+        city: city || undefined,
+        state: state || undefined,
+        pincode: pincode || undefined,
+        gstin: gstin || undefined,
+        pan: pan || undefined,
+      });
+
+      if (res.success) {
+        setSuccessToast(true);
+        setTimeout(() => setSuccessToast(false), 4000);
+      } else {
+        setErrorMsg(res.message || 'Failed to update business profile');
+      }
+    } catch (err: any) {
+      setErrorMsg(err?.response?.data?.message || err.message || 'Error updating business settings');
+    } finally {
       setSaving(false);
-      setSuccessToast(true);
-      setTimeout(() => setSuccessToast(false), 4000);
-    }, 700);
+    }
   };
 
   return (
